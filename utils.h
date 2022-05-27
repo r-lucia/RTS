@@ -7,6 +7,7 @@
 #include "time.h"
 #include "stdio.h"
 #include "string.h"
+#include "stdlib.h"
 
 //-----------------------------------------------------
 // GRAPHICS CONSTANTS:  setto le dimensioni del display fisico e grafico
@@ -22,11 +23,13 @@
 #define GREEN 10
 #define GREY 8
 #define RED 4
-#define GND 8
+#define GND 0
+#define ORANGE		42
 //-----------------------------------------------------
 // TASKS CONSTANTS
 //-----------------------------------------------------
 #define DIM    10                // max thread number
+#define DIM_DATI 4000
 //-----------------------------------------------------
 // STRUCT
 //-----------------------------------------------------
@@ -43,8 +46,8 @@ struct parametri_task {
 //-----------------------------------------------------
 // PUBLIC VARIABLES
 //-----------------------------------------------------
-static int n_task = 0; // active task counter
-
+//static int n_task = 0; // active task counter
+extern int task_signals;
 //-----------------------------------------------------
 // TASK VARIABLES
 //-----------------------------------------------------
@@ -68,9 +71,11 @@ void set_period(int index);
 void wait_for_period(int index);
 
 //int get_task_index(void *arg);
-int function__start_task(void *task_fun, int period, int deadline, int priority, struct parametri_task arg);
+int function__start_task(void *task_fun, int period, int deadline, int priority);
 
 void close_all_task();
+
+char choose_ecg();
 
 //-----------------------------------------------------
 //ALLEGRO FUNCTIONS
@@ -82,5 +87,7 @@ char listen_scancode();
 void get_string(char *str, int x, int y, int c, int b);
 
 void inizilizzazione_grafica(); //inizializzation funcion
+
+void readraw_ecg();
 
 #endif

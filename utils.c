@@ -6,10 +6,21 @@
 #include "utils.h"
 #include <stddef.h>
 #include "allegro.h"
+#include <wfdb/ecgmap.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "Task.h"
 
 //-----------------------------------------------------
 // PRIVATE VARIABLES
 //-----------------------------------------------------
+
+static int n_task = 0;
+//-----------------------------------------------------
+// GLOBAL VARIABLES
+//-----------------------------------------------------
+extern FILE *fp;
+extern FONT *fontECG;
 int task_signals = 0;
 //-----------------------------------------------------
 // TIME HANDLING FUNCTIONS
@@ -81,9 +92,9 @@ int get_task_index(struct parametri_task *arg) {
  * @param task_fun function that task will execute
  * @param period  repetition time, ms
  * @param deadline max relative time from start to end of task
- * @return  index ov just created task
+ * @return  index of next  task
  */
-int function__start_task(void *task_fun, int period, int deadline, int priority, struct parametri_task arg){
+int function__start_task(void *task_fun, int period, int deadline, int priority) {
     struct sched_param sched_par;
     pt[n_task].index = n_task;  //pt è una variabile globale di tipo parametri_task
     pt[n_task].period = period;
@@ -95,14 +106,14 @@ int function__start_task(void *task_fun, int period, int deadline, int priority,
     pthread_attr_setschedpolicy(&att[n_task], SCHED_FIFO);
     sched_par.sched_priority = pt[n_task].priority;
     pthread_attr_setschedparam(&att[n_task], &sched_par);
-    pthread_create(&tid[n_task], &att[n_task], task_fun,&arg);
+    pthread_create(&tid[n_task], &att[n_task], task_fun, &pt[n_task]);
 
 
 // NULL riempie il campo che definisce l'argomento da passare alla funzione
 //chiamata task_fun, questa è la funzione che definisce ciò che fa il thread
 // questa funzione generica crea un nuovo thread con i parametri settati in att
-
-    return n_task;
+  //è il numero assoccito ad ogni task e quindi il numero associato ad ogni task dipende dall'ordine in cui li chiamo
+    return n_task++;
 }
 
 /**
@@ -117,6 +128,41 @@ void close_all_task() {
 
     }*/
 }
+
+/**
+ *check if a key is pressed return 1
+ * and give to the pointer fp the file.csv connected with key pressed
+ */
+char choose_ecg() {
+
+    if (key[KEY_1]) {
+        printf("You pressed 'ECGstd'\n");
+        fp = fopen("ECGstd.csv", "r"); //cerchiamo di aprire il nostro file in modalità read
+        return 1;
+    }
+    if (key[KEY_2]) {
+        printf("You pressed 'ECGpiatto'\n");
+        fp = fopen("ECGpiatto.csv", "r");
+        return 1;
+    }
+    if (key[KEY_3]) {
+        printf("You pressed 'fibr_atriale'\n");
+        fp = fopen("fibr_atriale.csv", "r");
+        return 1;
+    }
+     if (key[KEY_4]) {
+        printf("You pressed 'tachicardia'\n");
+        fp = fopen("aritmia.csv", "r");
+        return 1;
+    }
+      if (key[KEY_5]) {
+        printf("You pressed 'tachicardia_sinusale'\n");
+        fp = fopen("tachicardia_sinusale.csv", "r");
+        return 1;
+    }
+      return 0;
+}
+
 //-----------------------------------------------------
 // ALLEGRO FUNCTIONS
 //-----------------------------------------------------
@@ -127,15 +173,22 @@ void close_all_task() {
 void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione collegata al task
     int index;
     index = arg->index;
+    char str[50];
     //index = get_task_index(arg);
     //tp = (struct parametri_task *) arg;
     set_period(index);
+
+
+    FONT *font1= load_font("Trebuchet.pcx",NULL, NULL);
+
+    sprintf(str, "ECG");
+    textout_ex(buffer_screen,font1,"ECG", 800,100,ORANGE,GND);
+
     while (!task_signals) {
         blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
         wait_for_period(index);
     }
 }
-
 
 /**
  * Base commands to start Allegro, with a task that will refresh screen
@@ -153,9 +206,13 @@ void inizilizzazione_grafica() {
     clear_to_color(buffer_screen, GND);
 
     //start a task in order to refresh graphic, lowest priority
-    function__start_task(task_refresh_grafica, 40, 40, 1,pt[DIM]);
+    function__start_task(task_refresh_grafica, 40, 40, 1);
 
 
 }
+
+/*void readraw_ecg(){
+    function__start_task(task_ecg, 4, 4, 1, pt[DIM]);
+}*/
 
 

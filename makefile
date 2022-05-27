@@ -16,9 +16,10 @@ CFLAGS = -Wall -lpthread -lrt -lm
 # OBJS are the object files to be linked
 #---------------------------------------------------
 #OBJ1 =  #qui scrivo i file che sono dipendenti (ovvero altri .c se ci sono)
+OBJ1= Patologie
 OBJ2 = utils
-#OBJ3 = tasks
-OBJS = $(MAIN).o $(OBJ2).o
+OBJ3 = Task
+OBJS = $(MAIN).o $(OBJ1).o $(OBJ2).o $(OBJ3).o
 #OBJS = $(MAIN).o $(OBJ2).o $(OBJ3).o
 #---------------------------------------------------
 # LIBS are the external libraries to be used
@@ -31,13 +32,13 @@ LIBS = `allegro-config --libs`
 all: $(OBJS)
 	$(CC) -o $(MAIN) $(OBJS) $(LIBS) $(CFLAGS) #questo comando esegue su CC (compilatore) il main e le altre dipendenze solo dopo aver eseguiti OBJS ovvero i file .o, inoltre integra la libreria allegro con LIBS e le altre introdotte come FLAGS
 $(MAIN).o: $(MAIN).c
-	$(CC) -c $(MAIN).c
-#$(OBJ1).o: $(OBJ1).c
-#	$(CC) -c $(OBJ1).c
+	$(CC) -c $(MAIN).c $(CFLAGS)
+$(OBJ1).o: $(OBJ1).c
+	$(CC) -c $(OBJ1).c  $(CFLAGS)
 $(OBJ2).o: $(OBJ2).c
-	$(CC) -c $(OBJ2).c
-#$(OBJ3).o: $(OBJ3).c
-	#$(CC) -c $(OBJ3).c
+	$(CC) -c $(OBJ2).c $(CFLAGS)
+$(OBJ3).o: $(OBJ3).c
+	$(CC) -c $(OBJ3).c  $(CFLAGS)
 
 
 #---------------------------------------------------
