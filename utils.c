@@ -179,10 +179,9 @@ void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione
     set_period(index);
 
 
-    FONT *font1= load_font("Trebuchet.pcx",NULL, NULL);
-
+    FONT *font1= load_font("CG44.PCX",NULL, NULL);
     sprintf(str, "ECG");
-    textout_ex(buffer_screen,font1,"ECG", 800,100,ORANGE,GND);
+    textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
 
     while (!task_signals) {
         blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);

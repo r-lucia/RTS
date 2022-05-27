@@ -35,14 +35,6 @@ int main() {
         sleep(1);
     }
 
-    /* picco_R();
-     picco_P();
-     fibr_atriale();
-     decesso();
-     tachicardia_sinusale();
-     aritmia();*/
-
-
     close_all_task();
     allegro_exit();
     return 0;

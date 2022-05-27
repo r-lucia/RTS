@@ -45,10 +45,10 @@ void *task_ecg(struct parametri_task *arg) {
             x_i = 0;
             y_i = 0;
 
- FONT *font1= load_font("Trebuchet.pcx",NULL, NULL);
+ FONT *font1= load_font("CG44.PCX",NULL, NULL);
 
     sprintf(str, "ECG");
-    textout_ex(buffer_screen,font1,"8", 600,500,WHITE,GND);
+    textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
         }
         while (fp != NULL && fgets(lines, 100, fp) != NULL) {
             //prendiamo una riga del file
@@ -95,6 +95,9 @@ void *task_diagnosi(struct parametri_task *arg){
         decesso();
         tachicardia_sinusale();
         aritmia();
+
+
+
 
         wait_for_period(index);
     }
