@@ -1,6 +1,7 @@
 #include "Task.h"
 #include "string.h"
 #include "utils.h"
+#include "Patologie.h"
 
 //-----------------------------------------------------
 // GLOBAL VARIABLES
@@ -14,6 +15,8 @@ extern int task_signals;
 extern float vett_x[];
 extern float vett_y[];
 extern FONT *fontECG;
+pthread_mutex_t mut1= PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mut2= PTHREAD_COND_INITIALIZER;
 //-----------------------------------------------------
 // DEFINIZIONE NUOVI TASK
 //-----------------------------------------------------
@@ -53,11 +56,18 @@ void *task_ecg(struct parametri_task *arg) {
             t = atof(sp);
             t_draw = t * 150;
             x_f = (int) t_draw;
+
+            pthread_mutex_lock(&mut1);
             vett_x[i] =  t; //questo vettore mi servirà per il check sulle patologie
+            pthread_mutex_unlock(&mut1);
+
             sp = strtok(NULL, ",");
             s = atof(sp);
             s_draw = s * (-100);
+            pthread_mutex_lock(&mut2);
             vett_y[i] = s;
+            pthread_mutex_unlock(&mut2);
+
             i++;
             y_f = (int) s_draw;
             printf("\n%d %d", x_f, y_f);
@@ -65,15 +75,27 @@ void *task_ecg(struct parametri_task *arg) {
                  WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
             x_i = x_f;
             y_i = y_f;
-            wait_for_period(index);
             //usleep(4000);
-
-
+              wait_for_period(index);
         }
-
-
-        //wait_for_period(index);
 
     }
     return 0;
+}
+
+void *task_diagnosi(struct parametri_task *arg){
+ int index;
+    index = arg->index;
+    set_period(index);
+    while (!key[KEY_ESC]) {
+
+        picco_R();
+        picco_P();
+        fibr_atriale();
+        decesso();
+        tachicardia_sinusale();
+        aritmia();
+
+        wait_for_period(index);
+    }
 }

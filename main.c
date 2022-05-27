@@ -22,25 +22,25 @@ int indice_R[DIM_DATI];
 int window_PR;
 
 
-
 int main() {
 
 
     inizilizzazione_grafica();
 
+    function__start_task(task_ecg, 15, 15, 2);
+    function__start_task(task_diagnosi, 50, 50, 2);
 
-    while (!key[KEY_ESC]) {
-        function__start_task(task_ecg(), 8, 8, 2);
 
-
+   while (!key[KEY_ESC]) {
+        sleep(1);
     }
 
-    picco_R();
-    picco_P();
-    fibr_atriale();
-    decesso();
-    tachicardia_sinusale();
-    aritmia();
+    /* picco_R();
+     picco_P();
+     fibr_atriale();
+     decesso();
+     tachicardia_sinusale();
+     aritmia();*/
 
 
     close_all_task();
