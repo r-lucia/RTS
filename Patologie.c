@@ -143,7 +143,7 @@ void decesso() {
     int count = 0;
     int j = 1;
     for (int i = 0; i < DIM_DATI; i++) {
-        if (vett_y[i] == 0) {
+        if (fp!=0 && vett_y[i] == 0) {
             count++;
 
             if (count > 3000) {

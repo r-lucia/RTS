@@ -88,7 +88,7 @@ void *task_diagnosi(struct parametri_task *arg){
  int index;
     index = arg->index;
     set_period(index);
-    while (!key[KEY_ESC]) {
+    while (!task_signals) {
 
         picco_R();
         picco_P();
