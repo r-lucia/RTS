@@ -28,7 +28,7 @@ pthread_mutex_t mut2= PTHREAD_COND_INITIALIZER;
 void *task_ecg(struct parametri_task *arg) {
     int index;
     index = arg->index;
-    set_period(index);
+
     float t_draw;
     float s_draw;
     float t;
@@ -50,7 +50,8 @@ void *task_ecg(struct parametri_task *arg) {
     sprintf(str, "ECG");
     textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
         }
-        while (fp != NULL && fgets(lines, 100, fp) != NULL) {
+        set_period(index);
+        while ( fp != NULL && fgets(lines, 100, fp) != NULL) {
             //prendiamo una riga del file
             sp = strtok(lines, ",");
             t = atof(sp);

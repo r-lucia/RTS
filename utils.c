@@ -174,14 +174,14 @@ void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione
     int index;
     index = arg->index;
     char str[50];
-    //index = get_task_index(arg);
-    //tp = (struct parametri_task *) arg;
     set_period(index);
 
 
     FONT *font1= load_font("CG44.PCX",NULL, NULL);
     sprintf(str, "ECG");
     textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
+
+    //qui devo scrivere la grafica statica iniziale
 
     while (!task_signals) {
         blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
