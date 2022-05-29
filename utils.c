@@ -15,7 +15,7 @@
 // PRIVATE VARIABLES
 //-----------------------------------------------------
 
-static int n_task = 0;
+// static int n_task ;
 //-----------------------------------------------------
 // GLOBAL VARIABLES
 //-----------------------------------------------------
@@ -94,7 +94,7 @@ int get_task_index(struct parametri_task *arg) {
  * @param deadline max relative time from start to end of task
  * @return  index of next  task
  */
-int function__start_task(void *task_fun, int period, int deadline, int priority) {
+pthread_t function__start_task(void *task_fun, int period, int deadline, int priority, int n_task) {
     struct sched_param sched_par;
     pt[n_task].index = n_task;  //pt è una variabile globale di tipo parametri_task
     pt[n_task].period = period;
@@ -112,8 +112,8 @@ int function__start_task(void *task_fun, int period, int deadline, int priority)
 // NULL riempie il campo che definisce l'argomento da passare alla funzione
 //chiamata task_fun, questa è la funzione che definisce ciò che fa il thread
 // questa funzione generica crea un nuovo thread con i parametri settati in att
-  //è il numero assoccito ad ogni task e quindi il numero associato ad ogni task dipende dall'ordine in cui li chiamo
-    return n_task++;
+    //è il numero assoccito ad ogni task e quindi il numero associato ad ogni task dipende dall'ordine in cui li chiamo
+    return tid[n_task];
 }
 
 /**
@@ -150,17 +150,22 @@ char choose_ecg() {
         fp = fopen("fibr_atriale.csv", "r");
         return 1;
     }
-     if (key[KEY_4]) {
+    if (key[KEY_4]) {
         printf("You pressed 'tachicardia'\n");
         fp = fopen("aritmia.csv", "r");
         return 1;
     }
-      if (key[KEY_5]) {
+    if (key[KEY_5]) {
         printf("You pressed 'tachicardia_sinusale'\n");
         fp = fopen("tachicardia_sinusale.csv", "r");
         return 1;
     }
-      return 0;
+    if (key[KEY_ESC]) {
+        printf("You pressed 'tachicardia_sinusale'\n");
+        allegro_exit();
+        return 0;
+    }
+    return 0;
 }
 
 //-----------------------------------------------------
@@ -174,15 +179,16 @@ void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione
     int index;
     index = arg->index;
     char str[50];
+
     set_period(index);
 
 
-    FONT *font1= load_font("CG44.PCX",NULL, NULL);
-    sprintf(str, "ECG");
-    textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
+    /*FONT *font_titolo= load_font("CG44.PCX",NULL, NULL);*/
+
+    // textout_ex(buffer_screen,font_titolo,"ECG", 5,5,WHITE,GND);
 
     //qui devo scrivere la grafica statica iniziale
-
+    //  blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
     while (!task_signals) {
         blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
         wait_for_period(index);
@@ -199,13 +205,19 @@ void inizilizzazione_grafica() {
 
     install_keyboard();
 
-    //create a  buffer, where all task can paint
     buffer_screen = create_bitmap(SCREEN_W, SCREEN_H);
-    clear_bitmap(buffer_screen);
-    clear_to_color(buffer_screen, GND);
+    screen_base = create_bitmap(SCREEN_W, SCREEN_H);
+    clear(screen_base);
+    clear_to_color(buffer_screen, WHITE);
+
+    fonts();
+    grafica_statica();
+
+
+    blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
 
     //start a task in order to refresh graphic, lowest priority
-    function__start_task(task_refresh_grafica, 40, 40, 1);
+    function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
 
 
 }
@@ -215,3 +227,30 @@ void inizilizzazione_grafica() {
 }*/
 
 
+void grafica_statica() {
+
+    textout_ex(screen_base, font_titolo, "ECG", (IN_WIDTH/2)-50, 5, RED, GND);
+    textout_ex(screen_base, font_titolo," Il seguente programma mostra:", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-200,BLU,GND);
+    textout_ex(screen_base, font_titolo,"- ECG di diversi pazienti", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-150,WHITE,GND);
+    textout_ex(screen_base, font_titolo,"- anomalie patologiche ", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-100, WHITE,GND);
+
+   textout_ex(screen_base, font_titolo," ISTRUZIONI:", 10,600,BLU,GND);
+    textout_ex(screen_base, font_medio," 1 : primo paziente", 10,680,WHITE,GND);
+    textout_ex(screen_base, font_medio," 2 : secondo paziente", 10,720,WHITE,GND);
+    textout_ex(screen_base, font_medio," 3 : terzo paziente", 10,760,WHITE,GND);
+    textout_ex(screen_base, font_medio," 4 : quarto paziente", 10,800,WHITE,GND);
+    textout_ex(screen_base, font_medio," 5 : quinto paziente", 10,840,WHITE,GND);
+    textout_ex(screen_base, font_medio," ESC : chiudi applicazione", 10,880,WHITE,GND);
+    textout_ex(screen_base, font_medio," ALT : torna alla pagina iniziale", 10,920,WHITE,GND);
+
+
+
+
+}
+
+void fonts() {
+
+    font_titolo = load_font("CG44.PCX", NULL, NULL);
+    font_medio = load_font("CG26.PCX", NULL, NULL);
+    font_piccolo = load_font("CG20.PCX", NULL, NULL);
+}

@@ -25,11 +25,22 @@
 #define RED 4
 #define GND 0
 #define ORANGE		42
+#define BLU			9
+#define LBLU		54
 //-----------------------------------------------------
 // TASKS CONSTANTS
 //-----------------------------------------------------
 #define DIM    10                // max thread number
 #define DIM_DATI 6000
+#define TASK_GRAFIC_INDEX 0
+#define TASK_ECG_INDEX 1
+#define TASK_PATOLOGIE_INDEX 2
+
+
+
+FONT * font_titolo;
+FONT *font_medio;
+FONT* font_piccolo;
 //-----------------------------------------------------
 // STRUCT
 //-----------------------------------------------------
@@ -54,6 +65,7 @@ extern int task_signals;
 pthread_t tid[DIM]; //array each element is one thread identifier
 pthread_attr_t att[DIM]; //struct that contains the thread attributes
 struct parametri_task pt[DIM];
+//extern  int n_task ;
 //-----------------------------------------------------
 // PUBLIC VARIABLES
 //-----------------------------------------------------
@@ -63,6 +75,7 @@ struct parametri_task pt[DIM];
 // GRAPHIC VARIABLES
 //-----------------------------------------------------
 BITMAP *buffer_screen;    // double buffer integration
+BITMAP *screen_base;
 //-----------------------------------------------------
 // TASK HANDLING FUNCTIONS
 //-----------------------------------------------------
@@ -71,7 +84,7 @@ void set_period(int index);
 void wait_for_period(int index);
 
 //int get_task_index(void *arg);
-int function__start_task(void *task_fun, int period, int deadline, int priority);
+pthread_t function__start_task(void *task_fun, int period, int deadline, int priority, int n_task);
 
 void close_all_task();
 
@@ -89,5 +102,7 @@ void get_string(char *str, int x, int y, int c, int b);
 void inizilizzazione_grafica(); //inizializzation funcion
 
 void readraw_ecg();
+ void grafica_statica();
+ void fonts();
 
 #endif

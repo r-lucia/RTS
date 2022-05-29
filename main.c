@@ -24,18 +24,14 @@ int window_PR;
 
 int main() {
 
-
+pthread_t id_ecg;
     inizilizzazione_grafica();
 
-    function__start_task(task_ecg, 15, 15, 2);
-    function__start_task(task_diagnosi, 50, 50, 2);
+    id_ecg=function__start_task(task_ecg, 15, 15, 2, TASK_ECG_INDEX);
+    function__start_task(task_diagnosi, 50, 50, 2, TASK_PATOLOGIE_INDEX);
 
+    pthread_join(id_ecg, NULL);
 
-   while (!key[KEY_ESC]) {
-        sleep(1);
-    }
-
-    close_all_task();
     allegro_exit();
     return 0;
 }

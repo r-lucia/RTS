@@ -15,8 +15,8 @@ extern int task_signals;
 extern float vett_x[];
 extern float vett_y[];
 extern FONT *fontECG;
-pthread_mutex_t mut1= PTHREAD_COND_INITIALIZER;
-pthread_mutex_t mut2= PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mut1 = PTHREAD_COND_INITIALIZER;
+pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
 //-----------------------------------------------------
 // DEFINIZIONE NUOVI TASK
 //-----------------------------------------------------
@@ -34,10 +34,10 @@ void *task_ecg(struct parametri_task *arg) {
     float t;
     float s;
     char *sp;
-
+    int esci;
     int i = 0;
     char lines[100];  // in questo array di caratteri inserisco una riga del file
-    while (!key[KEY_ESC]) //!!rivedere questo  while
+    while (!key[KEY_ESC]) //!!se premo esc esce da qui e quinsi start task torna l'id
     {
         char str[20];
         if (choose_ecg()) {
@@ -45,21 +45,26 @@ void *task_ecg(struct parametri_task *arg) {
             x_i = 0;
             y_i = 0;
 
- FONT *font1= load_font("CG44.PCX",NULL, NULL);
-
-    sprintf(str, "ECG");
-    textout_ex(buffer_screen,font1,"ECG", 500,100,WHITE,GND);
+           /* FONT *font1 = load_font("CG44.PCX", NULL, NULL);
+            sprintf(str, "ECG");
+            textout_ex(buffer_screen, font1, "ECG", 500, 100, WHITE, GND);*/
         }
         set_period(index);
-        while ( fp != NULL && fgets(lines, 100, fp) != NULL) {
+        while (fp != NULL && fgets(lines, 100, fp) != NULL) {
             //prendiamo una riga del file
+            if (key[KEY_ALT]) {
+                clear_to_color(buffer_screen, GND);
+                blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
+                fp = 0;
+                break;
+            }
             sp = strtok(lines, ",");
             t = atof(sp);
             t_draw = t * 150;
             x_f = (int) t_draw;
 
             pthread_mutex_lock(&mut1);
-            vett_x[i] =  t; //questo vettore mi servirà per il check sulle patologie
+            vett_x[i] = t; //questo vettore mi servirà per il check sulle patologie
             pthread_mutex_unlock(&mut1);
 
             sp = strtok(NULL, ",");
@@ -76,16 +81,15 @@ void *task_ecg(struct parametri_task *arg) {
                  WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
             x_i = x_f;
             y_i = y_f;
-            //usleep(4000);
-              wait_for_period(index);
+            wait_for_period(index);
         }
 
     }
     return 0;
 }
 
-void *task_diagnosi(struct parametri_task *arg){
- int index;
+void *task_diagnosi(struct parametri_task *arg) {
+    int index;
     index = arg->index;
     set_period(index);
     while (!task_signals) {
@@ -96,8 +100,6 @@ void *task_diagnosi(struct parametri_task *arg){
         decesso();
         tachicardia_sinusale();
         aritmia();
-
-
 
 
         wait_for_period(index);

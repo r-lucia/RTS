@@ -96,7 +96,7 @@ void aritmia() {
     int j = 1;
     int h = 0;
     for (int k = 1; k < num_R; k++) {
-        if (time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
+        if (fp!=0 && time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
             printf("%d aritmia  \n", j);
             return;
         } else {
@@ -114,7 +114,7 @@ void fibr_atriale() {
 
     int j = 1;
     int k = 0;
-    if (P == 0) {
+    if (fp!=0 &&P == 0) {
         printf("%d fibrillazioni atriali \n", j);
     } else printf("%d fibrillazioni atriali \n", k);
 }
