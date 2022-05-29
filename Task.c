@@ -53,7 +53,9 @@ void *task_ecg(struct parametri_task *arg) {
         while (fp != NULL && fgets(lines, 100, fp) != NULL) {
             //prendiamo una riga del file
             if (key[KEY_ALT]) {
+
                 clear_to_color(buffer_screen, GND);
+                clear(screen_ecg);
                 blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
                 fp = 0;
                 break;
@@ -77,10 +79,12 @@ void *task_ecg(struct parametri_task *arg) {
             i++;
             y_f = (int) s_draw;
             printf("\n%d %d", x_f, y_f);
-            line(buffer_screen, x_i, 400 + y_i, x_f, 400 + y_f,
+            line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
                  WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
+                 textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
             x_i = x_f;
             y_i = y_f;
+            blit(screen_ecg, buffer_screen,0,0,0,0, screen_ecg->w, screen_ecg->h);
             wait_for_period(index);
         }
 
@@ -95,12 +99,12 @@ void *task_diagnosi(struct parametri_task *arg) {
     while (!task_signals) {
 
         picco_R();
-        picco_P();
-        fibr_atriale();
-        decesso();
-        tachicardia_sinusale();
+       // picco_P();
+       // fibr_atriale();
+        //decesso();
+        //tachicardia_sinusale();
         aritmia();
-
+        //textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
 
         wait_for_period(index);
     }

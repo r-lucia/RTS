@@ -22,15 +22,17 @@ int indice_R[DIM_DATI];
 int window_PR;
 
 
+
 int main() {
 
 pthread_t id_ecg;
     inizilizzazione_grafica();
 
     id_ecg=function__start_task(task_ecg, 15, 15, 2, TASK_ECG_INDEX);
-    function__start_task(task_diagnosi, 50, 50, 2, TASK_PATOLOGIE_INDEX);
+    function__start_task(task_diagnosi, 80, 80, 2, TASK_PATOLOGIE_INDEX);
 
     pthread_join(id_ecg, NULL);
+
 
     allegro_exit();
     return 0;

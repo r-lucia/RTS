@@ -76,6 +76,7 @@ struct parametri_task pt[DIM];
 //-----------------------------------------------------
 BITMAP *buffer_screen;    // double buffer integration
 BITMAP *screen_base;
+BITMAP *screen_ecg;
 //-----------------------------------------------------
 // TASK HANDLING FUNCTIONS
 //-----------------------------------------------------
@@ -103,6 +104,7 @@ void inizilizzazione_grafica(); //inizializzation funcion
 
 void readraw_ecg();
  void grafica_statica();
+ void grafica_dinamica();
  void fonts();
 
 #endif

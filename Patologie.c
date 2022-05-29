@@ -48,6 +48,7 @@ void picco_R() {
 
     int i = -1;
     float R = 1;
+    char str[30];
     for (int k = 1; k < DIM_DATI; k++) {
         if (vett_y[k] > vett_y[k - 1] &&
             vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
@@ -62,12 +63,17 @@ void picco_R() {
             vett_R[i] = vett_y[k];
             indice_R[i] = k;                              //salva l'indice k dei vettori costruitleggendo il file csv
             printf("\n%f %f %d\n", time_R[i], vett_R[i], indice_R[i]);
-        }
 
+           // sprintf(str,vett_R);
+
+        }
     }
 
 
+
 }
+
+
 
 //-----------------------------------------------------
 //         PICCO P
@@ -96,15 +102,26 @@ void aritmia() {
     int j = 1;
     int h = 0;
     for (int k = 1; k < num_R; k++) {
+        /*if (key[KEY_ALT]) {
+
+                //clear_to_color(buffer_screen, GND);
+                clear(screen_ecg);
+                blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
+                //fp = 0;
+            break;
+            }*/
         if (fp!=0 && time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
             printf("%d aritmia  \n", j);
+            textout_ex(screen_ecg,font_medio," IREGOLARE",400,800, WHITE, GND );
             return;
         } else {
             printf("%d nessuna aritmia  \n", h);
+            textout_ex(screen_ecg,font_medio," REGOLARE",400,800, WHITE, GND );
             return;
 
         }
     }
+
 }
 
 //-----------------------------------------------------

@@ -21,6 +21,7 @@
 //-----------------------------------------------------
 extern FILE *fp;
 extern FONT *fontECG;
+
 int task_signals = 0;
 //-----------------------------------------------------
 // TIME HANDLING FUNCTIONS
@@ -183,13 +184,10 @@ void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione
     set_period(index);
 
 
-    /*FONT *font_titolo= load_font("CG44.PCX",NULL, NULL);*/
+   blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
 
-    // textout_ex(buffer_screen,font_titolo,"ECG", 5,5,WHITE,GND);
-
-    //qui devo scrivere la grafica statica iniziale
-    //  blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
     while (!task_signals) {
+
         blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
         wait_for_period(index);
     }
@@ -207,14 +205,16 @@ void inizilizzazione_grafica() {
 
     buffer_screen = create_bitmap(SCREEN_W, SCREEN_H);
     screen_base = create_bitmap(SCREEN_W, SCREEN_H);
+    screen_ecg= create_bitmap(SCREEN_W, SCREEN_H);
     clear(screen_base);
+    clear(screen_ecg);
     clear_to_color(buffer_screen, WHITE);
 
     fonts();
     grafica_statica();
 
 
-    blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
+   // blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
 
     //start a task in order to refresh graphic, lowest priority
     function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
@@ -253,4 +253,9 @@ void fonts() {
     font_titolo = load_font("CG44.PCX", NULL, NULL);
     font_medio = load_font("CG26.PCX", NULL, NULL);
     font_piccolo = load_font("CG20.PCX", NULL, NULL);
+}
+
+
+void grafica_dinamica(){
+
 }
