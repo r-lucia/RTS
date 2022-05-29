@@ -106,5 +106,6 @@ void readraw_ecg();
  void grafica_statica();
  void grafica_dinamica();
  void fonts();
-
+void svuota_vett_int(int dimensioni_vett, int *vett);
+void svuota_vett_float(int dimensioni_vett, float *vett);
 #endif

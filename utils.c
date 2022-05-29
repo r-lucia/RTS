@@ -259,3 +259,13 @@ void fonts() {
 void grafica_dinamica(){
 
 }
+void svuota_vett_int(int dimensioni_vett, int *vett){
+    for(int i=0; i<dimensioni_vett;i++){
+        vett[i]=0;
+    }
+}
+ void svuota_vett_float(int dimensioni_vett, float *vett){
+    for(int i=0; i<dimensioni_vett;i++){
+        vett[i]=0;
+    }
+}

@@ -17,6 +17,7 @@ extern float vett_y[];
 extern FONT *fontECG;
 pthread_mutex_t mut1 = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
+
 //-----------------------------------------------------
 // DEFINIZIONE NUOVI TASK
 //-----------------------------------------------------
@@ -44,10 +45,10 @@ void *task_ecg(struct parametri_task *arg) {
             clear(buffer_screen);
             x_i = 0;
             y_i = 0;
-
-           /* FONT *font1 = load_font("CG44.PCX", NULL, NULL);
-            sprintf(str, "ECG");
-            textout_ex(buffer_screen, font1, "ECG", 500, 100, WHITE, GND);*/
+            abilita_diagnosi = 0;
+            /* FONT *font1 = load_font("CG44.PCX", NULL, NULL);
+             sprintf(str, "ECG");
+             textout_ex(buffer_screen, font1, "ECG", 500, 100, WHITE, GND);*/
         }
         set_period(index);
         while (fp != NULL && fgets(lines, 100, fp) != NULL) {
@@ -56,8 +57,17 @@ void *task_ecg(struct parametri_task *arg) {
 
                 clear_to_color(buffer_screen, GND);
                 clear(screen_ecg);
-                blit(screen_base, buffer_screen,0,0,0,0, screen_base->w, screen_base->h);
-                fp = 0;
+                blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
+                fp = NULL;
+                num_R = 0;
+                abilita_diagnosi = 1;
+                svuota_vett_float(DIM_DATI, vett_R);
+                svuota_vett_float(DIM_DATI, time_R);
+                svuota_vett_int(DIM_DATI, indice_R);
+                i=0;
+                svuota_vett_float(DIM_DATI,vett_y);
+                svuota_vett_float(DIM_DATI,vett_x);
+
                 break;
             }
             sp = strtok(lines, ",");
@@ -81,10 +91,10 @@ void *task_ecg(struct parametri_task *arg) {
             printf("\n%d %d", x_f, y_f);
             line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
                  WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
-                 textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
+            textout_ex(screen_ecg, font_medio, "Frequenza dei picchi R:", 5, 800, WHITE, GND);
             x_i = x_f;
             y_i = y_f;
-            blit(screen_ecg, buffer_screen,0,0,0,0, screen_ecg->w, screen_ecg->h);
+            blit(screen_ecg, buffer_screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
             wait_for_period(index);
         }
 
@@ -97,13 +107,18 @@ void *task_diagnosi(struct parametri_task *arg) {
     index = arg->index;
     set_period(index);
     while (!task_signals) {
-
-        picco_R();
-       // picco_P();
-       // fibr_atriale();
-        //decesso();
-        //tachicardia_sinusale();
-        aritmia();
+        if (!abilita_diagnosi) {
+            num_R = 0;
+            svuota_vett_float(DIM_DATI, vett_R);
+            svuota_vett_float(DIM_DATI, time_R);
+            svuota_vett_int(DIM_DATI, indice_R);
+            picco_R();
+            // picco_P();
+            // fibr_atriale();
+            //decesso();
+            //tachicardia_sinusale();
+            aritmia();
+        }
         //textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
 
         wait_for_period(index);

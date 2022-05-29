@@ -17,9 +17,10 @@ float vett_x[DIM_DATI];
 float vett_y[DIM_DATI];
 float vett_R[DIM_DATI];
 float time_R[DIM_DATI];
-int num_R = 0;
+volatile int num_R = 0;
 int indice_R[DIM_DATI];
 int window_PR;
+
 
 
 
