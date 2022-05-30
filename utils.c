@@ -214,8 +214,8 @@ void inizilizzazione_grafica() {
     clear_to_color(buffer_screen, WHITE);
 
     fonts();
-    grafica_statica();
-    function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
+    //grafica_statica();
+   // function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
 
 
 }
@@ -231,22 +231,22 @@ void inizilizzazione_grafica() {
 */
 void grafica_statica() {
 
-    textout_ex(screen_base, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
-    textout_ex(screen_base, font_titolo, " Il seguente programma mostra:", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 200,
+    textout_ex(screen, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
+    textout_ex(screen, font_titolo, " Il seguente programma mostra:", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 200,
                BLU, GND);
-    textout_ex(screen_base, font_titolo, "- ECG di diversi pazienti", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 150,
+    textout_ex(screen, font_titolo, "- ECG di diversi pazienti", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 150,
                WHITE, GND);
-    textout_ex(screen_base, font_titolo, "- anomalie patologiche ", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 100, WHITE,
+    textout_ex(screen, font_titolo, "- anomalie patologiche ", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 100, WHITE,
                GND);
 
-    textout_ex(screen_base, font_titolo, " ISTRUZIONI:", 10, 600, BLU, GND);
-    textout_ex(screen_base, font_medio, " 1 : primo paziente", 10, 680, WHITE, GND);
-    textout_ex(screen_base, font_medio, " 2 : secondo paziente", 10, 720, WHITE, GND);
-    textout_ex(screen_base, font_medio, " 3 : terzo paziente", 10, 760, WHITE, GND);
-    textout_ex(screen_base, font_medio, " 4 : quarto paziente", 10, 800, WHITE, GND);
-    textout_ex(screen_base, font_medio, " 5 : quinto paziente", 10, 840, WHITE, GND);
-    textout_ex(screen_base, font_medio, " ESC : chiudi applicazione", 10, 880, WHITE, GND);
-    textout_ex(screen_base, font_medio, " ALT : torna alla pagina iniziale", 10, 920, WHITE, GND);
+    textout_ex(screen, font_medio, " ISTRUZIONI:", 10, 600, BLU, GND);
+    textout_ex(screen, font_medio, " 1 : primo paziente", 10, 680, WHITE, GND);
+    textout_ex(screen, font_medio, " 2 : secondo paziente", 10, 720, WHITE, GND);
+    textout_ex(screen, font_medio, " 3 : terzo paziente", 10, 760, WHITE, GND);
+    textout_ex(screen, font_medio, " 4 : quarto paziente", 10, 800, WHITE, GND);
+    textout_ex(screen, font_medio, " 5 : quinto paziente", 10, 840, WHITE, GND);
+    textout_ex(screen, font_medio, " ESC : chiudi applicazione", 10, 880, WHITE, GND);
+    textout_ex(screen, font_medio, " ALT : torna alla pagina iniziale", 10, 920, WHITE, GND);
 
 
 }
@@ -256,14 +256,13 @@ void grafica_statica() {
  * in the screen_ecg bitmap
 */
 void grafica_dinamica() {
-    line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
-         WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
-    textout_ex(screen_ecg, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
-    textout_ex(screen_ecg, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
-    textout_ex(screen_ecg, font_medio, "Dati del paziente", 1500, 650, WHITE, GND);
-    textout_ex(screen_ecg, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
-    textout_ex(screen_ecg, font_medio, " Fibirllazione atriale", 5, 750, WHITE, GND);
-    textout_ex(screen_ecg, font_medio, " Aritmia sinusale", 5, 800, WHITE, GND);
+     //200 è l'offset di partenza per buttar giù tutto il grafico
+    textout_ex(screen, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
+    textout_ex(screen, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
+    textout_ex(screen, font_medio, "Dati del paziente", 1500, 650, WHITE, GND);
+    textout_ex(screen, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
+    textout_ex(screen, font_medio, " Fibirllazione atriale", 5, 750, WHITE, GND);
+    textout_ex(screen, font_medio, " Aritmia sinusale", 5, 800, WHITE, GND);
 
 
 }

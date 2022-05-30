@@ -33,9 +33,9 @@
 //-----------------------------------------------------
 #define DIM    10                // max thread number
 #define DIM_DATI 6000
-#define TASK_GRAFIC_INDEX 0
-#define TASK_LETTURA_DATI 1
-#define TASK_ECG_INDEX 2
+//#define TASK_GRAFIC_INDEX 0
+#define TASK_LETTURA_DATI 0
+#define TASK_ECG_INDEX 1
 #define TASK_PATOLOGIE_INDEX 2
 
 

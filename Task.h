@@ -19,15 +19,19 @@ extern int x_i;
 extern int y_i;
 extern int x_f;
 extern int y_f;
-
 extern float vett_x[];
 extern float vett_y[];
 extern float vett_R[DIM_DATI];
 extern float time_R[DIM_DATI];
 extern int indice_R[DIM_DATI];
-int abilita_diagnosi;
+volatile int abilita_diagnosi;
+
+extern  int num_tachicardia;
+extern int num_fibr_atriali;
+extern int num_aritmia_sinusale;
 
 
+volatile int check_end_file;
 //-----------------------------------------------------
 //  TASK FUNCTION
 //-----------------------------------------------------

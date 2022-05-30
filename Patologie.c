@@ -15,6 +15,7 @@ void finestraRP() {
 
 }
 
+
 //-----------------------------------------------------
 //  DIAGNOSIS FUNCTION
 //-----------------------------------------------------
@@ -105,9 +106,10 @@ void aritmia() {
     }
     printf("end for aritmia: j = %d\n", j);
     if (j > 1)
-        textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
-    else
-        textout_ex(screen_ecg, font_medio, "REGOLARE", 350, 700, GREEN, GND);
+        num_tachicardia++;
+       // textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
+    //else
+        //textout_ex(screen_ecg, font_medio, "REGOLARE", 350, 700, GREEN, GND);
 }
 
 /*
@@ -122,10 +124,10 @@ void fibr_atriale() {
     }
     if (fp != NULL && P == 0) {
         printf("%d fibrillazioni atriali presente \n", k);
-
-        textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 750, RED, GND);
+num_fibr_atriali++;
+        //textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 750, RED, GND);
     } else {
-        textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 750, GREEN, GND);
+        //textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 750, GREEN, GND);
         printf("%d fibrillazioni atriali assente \n", k);
     }
 }
@@ -143,7 +145,8 @@ void tachicardia_sinusale() {
     }
     if (window_PR > 100) {
         printf("%d tachicardia sinusale  \n", j);
-        textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 800, RED, GND);
+       // textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 800, RED, GND);
+       num_aritmia_sinusale++;
 
     } else {
         printf("%d nessuna tachicardia sinusale  \n", j);

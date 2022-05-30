@@ -9,6 +9,9 @@
 
 pthread_mutex_t mut1 = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
+int num_tachicardia = 0;
+int num_fibr_atriali = 0;
+int num_aritmia_sinusale = 0;
 
 //-----------------------------------------------------
 //  TASK FUNCTION
@@ -51,14 +54,16 @@ void *task_lettura_file(struct parametri_task *arg) {
     int i = 0;
     char lines[100];
 
+
     while (!task_signals) {
 
         if (choose_ecg()) {  //selezia il file da cui leggere
 
             svuota_vett_float(DIM_DATI, vett_y);
             svuota_vett_float(DIM_DATI, vett_x);
-
+            clear_to_color(screen, GND);
             abilita_diagnosi = 0;
+
         }
         set_period(index);
         while (fp != NULL && fgets(lines, 100, fp) != NULL) {
@@ -76,7 +81,12 @@ void *task_lettura_file(struct parametri_task *arg) {
             pthread_mutex_unlock(&mut2);
             printf("\n  %f\n", s);
             i++;
+
             // wait_for_period(index);
+        }
+        if (i != 0) {
+            abilita_diagnosi = 1;
+            i = 0;
         }
         wait_for_period(index);
     }
@@ -91,25 +101,28 @@ void *task_ecg(struct parametri_task *arg) {
     index = arg->index;
     float t_draw;
     float s_draw;
-
-
+    grafica_statica();
+    int i;
     char lines[100];
     while (!key[KEY_ESC])  // ESC: chiudo il task: return ID task_ecg: esco dal main
     {
-        x_i = 0;
-        y_i = 0;
 
         char str[20];
         set_period(index);
-        for (int i = 0; i < DIM_DATI; i++) {
-            /*if (key[KEY_ALT]) {            // ALT: stop ecg e ritorna a screen_base
-                clear_to_color(buffer_screen, GND);
+        while (abilita_diagnosi == 1 && i < DIM_DATI) {
+            if (key[KEY_ALT]) {            // ALT: stop ecg e ritorna a screen_base
+                clear(screen);
                 clear(screen_ecg);
-                blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
+                grafica_statica();
+                // blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
                 fp = NULL;
                 num_R = 0;
                 P = 0;
-                abilita_diagnosi = 1;
+                x_i = 0;
+                y_i = 0;
+                x_f = 0;
+                y_f = 0;
+                abilita_diagnosi = 0;
                 svuota_vett_float(DIM_DATI, vett_R);
                 svuota_vett_float(DIM_DATI, time_R);
                 svuota_vett_int(DIM_DATI, indice_R);
@@ -118,8 +131,7 @@ void *task_ecg(struct parametri_task *arg) {
                 svuota_vett_float(DIM_DATI, vett_x);
 
                 break;
-            }*/
-
+            }
 
             pthread_mutex_lock(&mut1);
             t_draw = vett_x[i] * 150; //[s]: ascissa dell'ECG
@@ -130,16 +142,19 @@ void *task_ecg(struct parametri_task *arg) {
             s_draw = vett_y[i] * (-100); //[mV]: ordinata dell'ECG
             pthread_mutex_unlock(&mut2);
             y_f = (int) s_draw;
-
+            line(screen, x_i, 400 + y_i, x_f, 400 + y_f, WHITE);
             // printf("\n%d %d", x_f, y_f);
             grafica_dinamica();
+            printf("\n  vettori iniziali %d %d\n", x_i, y_i);
+            // blit(screen_ecg, screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
             x_i = x_f;
             y_i = y_f;
             i++;
-            printf("\n %d", i);
-            blit(screen_ecg, buffer_screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
+            printf("\n  indice vettori  %d\n", i);
+
             wait_for_period(index);
         }
+        abilita_diagnosi = 0;
 
 
     }
@@ -150,25 +165,29 @@ void *task_ecg(struct parametri_task *arg) {
  * aim of function task is to check up
  * from ECG's data
  */
-/* void *task_diagnosi(struct parametri_task *arg) {
+void *task_diagnosi(struct parametri_task *arg) {
 
-     int index;
-     index = arg->index;
-     set_period(index);
+    int index;
+    index = arg->index;
+    set_period(index);
 
-     while (!task_signals) {
+    while (!task_signals) {
 
-         if (!abilita_diagnosi) {
+        if (!abilita_diagnosi) {
 
-             picco_R();
-             picco_P();
+            picco_R();
+            picco_P();
 
-             fibr_atriale();
-             tachicardia_sinusale();
-             aritmia();
-             // decesso();
-         } //check sulla deadline miss, visualizzare a schermo le deadline miss di tutti i task
-         wait_for_period(index);
-     }
+            fibr_atriale();
+            tachicardia_sinusale();
+            aritmia();
+            // decesso();
+        } //check sulla deadline miss, visualizzare a schermo le deadline miss di tutti i task
+        wait_for_period(index);
+        num_tachicardia = 0;
+        num_fibr_atriali = 0;
+        num_aritmia_sinusale = 0;
 
- }*/
+    }
+
+}

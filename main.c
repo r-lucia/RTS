@@ -33,8 +33,8 @@ int main() {
     inizilizzazione_grafica();
 
 
-   id_ecg = function__start_task(task_ecg, 10, 10, 2, TASK_ECG_INDEX);
-  function__start_task(task_lettura_file,5,5,2,TASK_LETTURA_DATI);
+   id_ecg = function__start_task(task_ecg, 20, 20, 2, TASK_ECG_INDEX);
+  function__start_task(task_lettura_file,8,8,2,TASK_LETTURA_DATI);
     //function__start_task(task_diagnosi, 80, 80, 2, TASK_PATOLOGIE_INDEX);
 
     pthread_join(id_ecg, NULL);
