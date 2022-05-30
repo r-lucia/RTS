@@ -46,9 +46,7 @@ void *task_ecg(struct parametri_task *arg) {
             x_i = 0;
             y_i = 0;
             abilita_diagnosi = 0;
-            /* FONT *font1 = load_font("CG44.PCX", NULL, NULL);
-             sprintf(str, "ECG");
-             textout_ex(buffer_screen, font1, "ECG", 500, 100, WHITE, GND);*/
+
         }
         set_period(index);
         while (fp != NULL && fgets(lines, 100, fp) != NULL) {
@@ -60,6 +58,8 @@ void *task_ecg(struct parametri_task *arg) {
                 blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
                 fp = NULL;
                 num_R = 0;
+                num_R_abs=0;
+                P=0;
                 abilita_diagnosi = 1;
                 svuota_vett_float(DIM_DATI, vett_R);
                 svuota_vett_float(DIM_DATI, time_R);
@@ -91,7 +91,12 @@ void *task_ecg(struct parametri_task *arg) {
             printf("\n%d %d", x_f, y_f);
             line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
                  WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
-            textout_ex(screen_ecg, font_medio, "Frequenza dei picchi R:", 5, 800, WHITE, GND);
+                 textout_ex(screen_ecg, font_titolo, "ECG", (IN_WIDTH/2)-50, 5, RED, GND);
+                 textout_ex(screen_ecg, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
+                 textout_ex(screen_ecg, font_medio, "Dati del paziente",1500, 650, WHITE, GND);
+            textout_ex(screen_ecg, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
+            textout_ex(screen_ecg, font_medio, " Fibirllazione atriale", 5, 750,WHITE,GND);
+            textout_ex(screen_ecg, font_medio, " Aritmia sinusale", 5, 800,WHITE,GND);
             x_i = x_f;
             y_i = y_f;
             blit(screen_ecg, buffer_screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
@@ -108,19 +113,19 @@ void *task_diagnosi(struct parametri_task *arg) {
     set_period(index);
     while (!task_signals) {
         if (!abilita_diagnosi) {
-            num_R = 0;
-            svuota_vett_float(DIM_DATI, vett_R);
-            svuota_vett_float(DIM_DATI, time_R);
-            svuota_vett_int(DIM_DATI, indice_R);
+
             picco_R();
-            // picco_P();
-            // fibr_atriale();
-            //decesso();
-            //tachicardia_sinusale();
+            picco_P();
+             fibr_atriale();
+
+            tachicardia_sinusale();
             aritmia();
+             // decesso();
         }
+
         //textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
 
         wait_for_period(index);
     }
+
 }

@@ -18,7 +18,7 @@ extern float vett_R[DIM_DATI];
 extern float time_R[DIM_DATI];
 extern int indice_R[DIM_DATI];
 
-float P = 0;
+
 extern int window_PR;
 
 
@@ -49,15 +49,22 @@ void picco_R() {
     int i = -1;
     float R = 1;
     char str[30];
+    svuota_vett_float(DIM_DATI, vett_R);
+    svuota_vett_float(DIM_DATI, time_R);
+    svuota_vett_int(DIM_DATI, indice_R);
+num_R=0;
+
+
     for (int k = 1; k < DIM_DATI; k++) {
-        if (vett_y[k] > vett_y[k - 1] &&
-            vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
+        if (vett_y[k] > vett_y[k - 1] && vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
             //precedente e se sto su un picco R
             if (i == -1 ||
-                    ( vett_x[k] - time_R[i] > 00.5 && (k-indice_R[i]>2) )) { //la prima condizione serve a poter scrivere anche nella posizione i=o
+                (vett_x[k] - time_R[i] > 00.05 &&
+                 (k - indice_R[i] > 2))) { //la prima condizione serve a poter scrivere anche nella posizione i=o
                 //la seconda mi serve a capire se sto valutando picchi tra loro lontani
                 i++;                                        //se sono verificate queste condizioni allora incremento i
                 num_R++;
+                num_R_abs++;
             }
             time_R[i] = vett_x[k];                          //aggiorno i vettori che mi registrano i tempi dei picchi R
             vett_R[i] = vett_y[k];
@@ -100,11 +107,11 @@ void aritmia() {
     int j = 0;
 
     printf("num_R: %d, j = %d\n", num_R, j);
-    if(num_R<2){
+    if (num_R < 2) {
         return;
     }
     for (int k = 1; k < num_R; k++) {
-        if ( time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
+        if (time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
             j++;
             printf("%d aritmia  \n", j);
         }
@@ -113,21 +120,27 @@ void aritmia() {
     }
     printf("end for aritmia: j = %d\n", j);
     if (j > 1)
-        textout_ex(screen_ecg, font_medio, "NON REGOLARE", 400, 800, WHITE, GND);
+        textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
     else
-        textout_ex(screen_ecg, font_medio, "REGOLARE", 400, 800, WHITE, GND);
+        textout_ex(screen_ecg, font_medio, "REGOLARE",350 , 700, GREEN, GND);
 }
 
 //-----------------------------------------------------
 //         FIBRILLAZIONE ATRIALE 3
 //-----------------------------------------------------
 void fibr_atriale() {
+    int k = 1;
+    if (num_R < 3) {
+        return;
+    }
+    if (fp != NULL && P == 0) {
+        printf("%d fibrillazioni atriali presente \n", k);
 
-    int j = 1;
-    int k = 0;
-    if (fp != 0 && P == 0) {
-        printf("%d fibrillazioni atriali \n", j);
-    } else printf("%d fibrillazioni atriali \n", k);
+        textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 750, RED, GND);
+    } else {
+        textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 750, GREEN, GND);
+        printf("%d fibrillazioni atriali assente \n", k);
+    }
 }
 
 //-----------------------------------------------------
@@ -136,15 +149,20 @@ void fibr_atriale() {
 void tachicardia_sinusale() {
     finestraRP();
     int j = 1;
-    for (int k = 1; k < num_R; k++) {
+    if (num_R<4){
+        return;
+    }
+    //for (int k = 1; k < num_R; k++) {
         // if (time_R[k] - time_R[k - 1] > 00.300) { //non supera i 300ms quindi fa più di 100 battiti/min
         if (window_PR > 100) {
             printf("%d tachicardia sinusale  \n", j);
-            return;
+            textout_ex(screen_ecg,font_medio, "PRESENTE", 350, 800, RED, GND);
+
         } else {
             printf("%d nessuna tachicardia sinusale  \n", j);
-            return;
-        }
+            textout_ex(screen_ecg,font_medio, "ASSENTE", 350, 800, GREEN, GND);
+
+       // }
     }
 
 }
@@ -153,18 +171,20 @@ void tachicardia_sinusale() {
 //        DECESSO 2
 //-----------------------------------------------------
 void decesso() {
-    int count = 0;
-    int j = 1;
+    int count;
+
+
     for (int i = 0; i < DIM_DATI; i++) {
-        if (fp != 0 && vett_y[i] == 0) {
+
+        if (num_R > 4 && vett_y[i] == 0) {
             count++;
+            if (count > 4000) {
 
-            if (count > 3000) {
-
-                printf(" %d decesso  \n", j);
-                return;
+                printf(" %d decesso  \n", count);
+                textout_ex(screen_ecg, font_medio, "DECESSO", 400, 930, RED, GND);
+                count = 0;
             }
-
+             printf(" %d decesso  \n", count);
         }
     }
 }

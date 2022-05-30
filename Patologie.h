@@ -8,8 +8,9 @@
 
 
 #define WINDOW_PR_MAX 300
- extern float P;
+ extern  volatile float P;
 extern volatile int num_R;
+extern volatile int num_R_abs;
 void finestraRP();
 void picco_R(); //uesta funzione mi registra i picchi R eil relativo tempo
 void picco_P();
