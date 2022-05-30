@@ -6,23 +6,16 @@
 #include "utils.h"
 #include <stddef.h>
 #include "allegro.h"
-#include <wfdb/ecgmap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "Task.h"
 
-//-----------------------------------------------------
-// PRIVATE VARIABLES
-//-----------------------------------------------------
 
-// static int n_task ;
 //-----------------------------------------------------
 // GLOBAL VARIABLES
 //-----------------------------------------------------
-extern FILE *fp;
-extern FONT *fontECG;
-
 int task_signals = 0;
+
 //-----------------------------------------------------
 // TIME HANDLING FUNCTIONS
 //-----------------------------------------------------
@@ -51,7 +44,7 @@ void time_add_ms(struct timespec *t, int ms) {
     }
 }
 //-----------------------------------------------------
-// TASK HANDLING FUNCTIONS: global function
+// TASK HANDLING FUNCTIONS
 //-----------------------------------------------------
 
 /**
@@ -123,11 +116,6 @@ pthread_t function__start_task(void *task_fun, int period, int deadline, int pri
  */
 void close_all_task() {
     task_signals = 1;
-    /*while (n_task > 0) {
-        n_task--;
-        pthread_join(tid[n_task], NULL);
-
-    }*/
 }
 
 /**
@@ -170,26 +158,41 @@ char choose_ecg() {
 }
 
 //-----------------------------------------------------
-// ALLEGRO FUNCTIONS
+// GENERAL FUNCTIONS
 //-----------------------------------------------------
-/**
- * aim of function task is to refresh screen and
- * transferring 
+
+/** Create a three new Font:
+ * font_titolo :one for the title
+ * font_medio: one medium
+ * font_piccolo: one for small character
+
  */
-void *task_refresh_grafica(struct parametri_task *arg) { //questa è la funzione collegata al task
-    int index;
-    index = arg->index;
-    char str[50];
+void fonts() {
 
-    set_period(index);
+    font_titolo = load_font("CG44.PCX", NULL, NULL);
+    font_medio = load_font("CG26.PCX", NULL, NULL);
+    font_piccolo = load_font("CG20.PCX", NULL, NULL);
+}
+
+/** empty function for vector of int
+ * @param dimensioni_vett: dimention of vector
+ * @param *vett: pointer to vector
+ */
+
+void svuota_vett_int(int dimensioni_vett, int *vett) {
+    for (int i = 0; i < dimensioni_vett; i++) {
+        vett[i] = 0;
+    }
+}
 
 
-   blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
-
-    while (!task_signals) {
-
-        blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
-        wait_for_period(index);
+/** empty function for vector of float
+ * @param dimensioni_vett: dimention of vector
+ * @param *vett: pointer to vector
+ */
+void svuota_vett_float(int dimensioni_vett, float *vett) {
+    for (int i = 0; i < dimensioni_vett; i++) {
+        vett[i] = 0;
     }
 }
 
@@ -205,67 +208,62 @@ void inizilizzazione_grafica() {
 
     buffer_screen = create_bitmap(SCREEN_W, SCREEN_H);
     screen_base = create_bitmap(SCREEN_W, SCREEN_H);
-    screen_ecg= create_bitmap(SCREEN_W, SCREEN_H);
+    screen_ecg = create_bitmap(SCREEN_W, SCREEN_H);
     clear(screen_base);
     clear(screen_ecg);
     clear_to_color(buffer_screen, WHITE);
 
     fonts();
     grafica_statica();
-
-
-   // blit(screen_base, buffer_screen,0,0,0,0,screen_base->w, screen_base->h);
-
-    //start a task in order to refresh graphic, lowest priority
     function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
 
 
 }
 
-/*void readraw_ecg(){
-    function__start_task(task_ecg, 4, 4, 1, pt[DIM]);
-}*/
+
+//-----------------------------------------------------
+// BITMAP FUNCTIONS
+//-----------------------------------------------------
 
 
+/** Draw the initial screen with instruction
+ * in the screen_base bitmap
+*/
 void grafica_statica() {
 
-    textout_ex(screen_base, font_titolo, "ECG", (IN_WIDTH/2)-50, 5, RED, GND);
-    textout_ex(screen_base, font_titolo," Il seguente programma mostra:", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-200,BLU,GND);
-    textout_ex(screen_base, font_titolo,"- ECG di diversi pazienti", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-150,WHITE,GND);
-    textout_ex(screen_base, font_titolo,"- anomalie patologiche ", (IN_WIDTH/2)-250,(IN_HEIGHT/2)-100, WHITE,GND);
+    textout_ex(screen_base, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
+    textout_ex(screen_base, font_titolo, " Il seguente programma mostra:", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 200,
+               BLU, GND);
+    textout_ex(screen_base, font_titolo, "- ECG di diversi pazienti", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 150,
+               WHITE, GND);
+    textout_ex(screen_base, font_titolo, "- anomalie patologiche ", (IN_WIDTH / 2) - 250, (IN_HEIGHT / 2) - 100, WHITE,
+               GND);
 
-   textout_ex(screen_base, font_titolo," ISTRUZIONI:", 10,600,BLU,GND);
-    textout_ex(screen_base, font_medio," 1 : primo paziente", 10,680,WHITE,GND);
-    textout_ex(screen_base, font_medio," 2 : secondo paziente", 10,720,WHITE,GND);
-    textout_ex(screen_base, font_medio," 3 : terzo paziente", 10,760,WHITE,GND);
-    textout_ex(screen_base, font_medio," 4 : quarto paziente", 10,800,WHITE,GND);
-    textout_ex(screen_base, font_medio," 5 : quinto paziente", 10,840,WHITE,GND);
-    textout_ex(screen_base, font_medio," ESC : chiudi applicazione", 10,880,WHITE,GND);
-    textout_ex(screen_base, font_medio," ALT : torna alla pagina iniziale", 10,920,WHITE,GND);
-
-
+    textout_ex(screen_base, font_titolo, " ISTRUZIONI:", 10, 600, BLU, GND);
+    textout_ex(screen_base, font_medio, " 1 : primo paziente", 10, 680, WHITE, GND);
+    textout_ex(screen_base, font_medio, " 2 : secondo paziente", 10, 720, WHITE, GND);
+    textout_ex(screen_base, font_medio, " 3 : terzo paziente", 10, 760, WHITE, GND);
+    textout_ex(screen_base, font_medio, " 4 : quarto paziente", 10, 800, WHITE, GND);
+    textout_ex(screen_base, font_medio, " 5 : quinto paziente", 10, 840, WHITE, GND);
+    textout_ex(screen_base, font_medio, " ESC : chiudi applicazione", 10, 880, WHITE, GND);
+    textout_ex(screen_base, font_medio, " ALT : torna alla pagina iniziale", 10, 920, WHITE, GND);
 
 
 }
 
-void fonts() {
 
-    font_titolo = load_font("CG44.PCX", NULL, NULL);
-    font_medio = load_font("CG26.PCX", NULL, NULL);
-    font_piccolo = load_font("CG20.PCX", NULL, NULL);
-}
+/** Draw the dynamic screen of ECG and check up
+ * in the screen_ecg bitmap
+*/
+void grafica_dinamica() {
+    line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
+         WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
+    textout_ex(screen_ecg, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
+    textout_ex(screen_ecg, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
+    textout_ex(screen_ecg, font_medio, "Dati del paziente", 1500, 650, WHITE, GND);
+    textout_ex(screen_ecg, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
+    textout_ex(screen_ecg, font_medio, " Fibirllazione atriale", 5, 750, WHITE, GND);
+    textout_ex(screen_ecg, font_medio, " Aritmia sinusale", 5, 800, WHITE, GND);
 
 
-void grafica_dinamica(){
-
-}
-void svuota_vett_int(int dimensioni_vett, int *vett){
-    for(int i=0; i<dimensioni_vett;i++){
-        vett[i]=0;
-    }
-}
- void svuota_vett_float(int dimensioni_vett, float *vett){
-    for(int i=0; i<dimensioni_vett;i++){
-        vett[i]=0;
-    }
 }

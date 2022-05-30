@@ -6,21 +6,81 @@
 //-----------------------------------------------------
 // GLOBAL VARIABLES
 //-----------------------------------------------------
-extern FILE *fp;
-extern int x_i;
-extern int y_i;
-extern int x_f;
-extern int y_f;
-extern int task_signals;
-extern float vett_x[];
-extern float vett_y[];
-extern FONT *fontECG;
+
 pthread_mutex_t mut1 = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
 
 //-----------------------------------------------------
-// DEFINIZIONE NUOVI TASK
+//  TASK FUNCTION
 //-----------------------------------------------------
+
+
+/**
+ * aim of function task is to refresh screen and
+ * transferring
+ */
+void *task_refresh_grafica(struct parametri_task *arg) {
+    int index;
+    index = arg->index;
+    char str[50];
+
+    set_period(index);
+
+
+    blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
+
+    while (!task_signals) {
+
+        blit(buffer_screen, screen, 0, 0, 0, 0, buffer_screen->w, buffer_screen->h);
+        wait_for_period(index);
+    }
+}
+
+/**
+ * aim of function task is to read the ECG file connect
+ *  to the button pressed and write the data in two vector
+ * one for time and one for the signal in mV
+ */
+
+void *task_lettura_file(struct parametri_task *arg) {
+    int index;
+    index = arg->index;
+    float t;
+    float s;
+    char *sp;
+    int i = 0;
+    char lines[100];
+
+    while (!task_signals) {
+
+        if (choose_ecg()) {  //selezia il file da cui leggere
+
+            svuota_vett_float(DIM_DATI, vett_y);
+            svuota_vett_float(DIM_DATI, vett_x);
+
+            abilita_diagnosi = 0;
+        }
+        set_period(index);
+        while (fp != NULL && fgets(lines, 100, fp) != NULL) {
+            sp = strtok(lines, ",");
+            t = atof(sp);
+            pthread_mutex_lock(&mut1);
+            vett_x[i] = t;          // sarà utilizzato per il check sulle patologie
+            pthread_mutex_unlock(&mut1);
+            printf("\n  %f %d\n", t, i);
+            sp = strtok(NULL, ",");
+            s = atof(sp);
+
+            pthread_mutex_lock(&mut2);
+            vett_y[i] = s;      //
+            pthread_mutex_unlock(&mut2);
+            printf("\n  %f\n", s);
+            i++;
+            // wait_for_period(index);
+        }
+        wait_for_period(index);
+    }
+}
 
 /**
  * aim of function task is to read the ECG file
@@ -29,103 +89,86 @@ pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
 void *task_ecg(struct parametri_task *arg) {
     int index;
     index = arg->index;
-
     float t_draw;
     float s_draw;
-    float t;
-    float s;
-    char *sp;
-    int esci;
-    int i = 0;
-    char lines[100];  // in questo array di caratteri inserisco una riga del file
-    while (!key[KEY_ESC]) //!!se premo esc esce da qui e quinsi start task torna l'id
+
+
+    char lines[100];
+    while (!key[KEY_ESC])  // ESC: chiudo il task: return ID task_ecg: esco dal main
     {
+        x_i = 0;
+        y_i = 0;
+
         char str[20];
-        if (choose_ecg()) {
-            clear(buffer_screen);
-            x_i = 0;
-            y_i = 0;
-            abilita_diagnosi = 0;
-
-        }
         set_period(index);
-        while (fp != NULL && fgets(lines, 100, fp) != NULL) {
-            //prendiamo una riga del file
-            if (key[KEY_ALT]) {
-
+        for (int i = 0; i < DIM_DATI; i++) {
+            /*if (key[KEY_ALT]) {            // ALT: stop ecg e ritorna a screen_base
                 clear_to_color(buffer_screen, GND);
                 clear(screen_ecg);
                 blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
                 fp = NULL;
                 num_R = 0;
-                num_R_abs=0;
-                P=0;
+                P = 0;
                 abilita_diagnosi = 1;
                 svuota_vett_float(DIM_DATI, vett_R);
                 svuota_vett_float(DIM_DATI, time_R);
                 svuota_vett_int(DIM_DATI, indice_R);
-                i=0;
-                svuota_vett_float(DIM_DATI,vett_y);
-                svuota_vett_float(DIM_DATI,vett_x);
+                i = 0;
+                svuota_vett_float(DIM_DATI, vett_y);
+                svuota_vett_float(DIM_DATI, vett_x);
 
                 break;
-            }
-            sp = strtok(lines, ",");
-            t = atof(sp);
-            t_draw = t * 150;
-            x_f = (int) t_draw;
+            }*/
+
 
             pthread_mutex_lock(&mut1);
-            vett_x[i] = t; //questo vettore mi servirà per il check sulle patologie
+            t_draw = vett_x[i] * 150; //[s]: ascissa dell'ECG
             pthread_mutex_unlock(&mut1);
+            x_f = (int) t_draw;
 
-            sp = strtok(NULL, ",");
-            s = atof(sp);
-            s_draw = s * (-100);
             pthread_mutex_lock(&mut2);
-            vett_y[i] = s;
+            s_draw = vett_y[i] * (-100); //[mV]: ordinata dell'ECG
             pthread_mutex_unlock(&mut2);
-
-            i++;
             y_f = (int) s_draw;
-            printf("\n%d %d", x_f, y_f);
-            line(screen_ecg, x_i, 400 + y_i, x_f, 400 + y_f,
-                 WHITE); //200 è l'offset di partenza per buttar giù tutto il grafico
-                 textout_ex(screen_ecg, font_titolo, "ECG", (IN_WIDTH/2)-50, 5, RED, GND);
-                 textout_ex(screen_ecg, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
-                 textout_ex(screen_ecg, font_medio, "Dati del paziente",1500, 650, WHITE, GND);
-            textout_ex(screen_ecg, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
-            textout_ex(screen_ecg, font_medio, " Fibirllazione atriale", 5, 750,WHITE,GND);
-            textout_ex(screen_ecg, font_medio, " Aritmia sinusale", 5, 800,WHITE,GND);
+
+            // printf("\n%d %d", x_f, y_f);
+            grafica_dinamica();
             x_i = x_f;
             y_i = y_f;
+            i++;
+            printf("\n %d", i);
             blit(screen_ecg, buffer_screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
             wait_for_period(index);
         }
+
 
     }
     return 0;
 }
 
-void *task_diagnosi(struct parametri_task *arg) {
-    int index;
-    index = arg->index;
-    set_period(index);
-    while (!task_signals) {
-        if (!abilita_diagnosi) {
+/**
+ * aim of function task is to check up
+ * from ECG's data
+ */
+/* void *task_diagnosi(struct parametri_task *arg) {
 
-            picco_R();
-            picco_P();
+     int index;
+     index = arg->index;
+     set_period(index);
+
+     while (!task_signals) {
+
+         if (!abilita_diagnosi) {
+
+             picco_R();
+             picco_P();
+
              fibr_atriale();
-
-            tachicardia_sinusale();
-            aritmia();
+             tachicardia_sinusale();
+             aritmia();
              // decesso();
-        }
+         } //check sulla deadline miss, visualizzare a schermo le deadline miss di tutti i task
+         wait_for_period(index);
+     }
 
-        //textout_ex(screen_ecg,font_medio,"Frequenza dei picchi R:", 5,800,WHITE,GND);
-
-        wait_for_period(index);
-    }
-
-}
+ }*/

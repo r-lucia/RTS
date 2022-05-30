@@ -6,15 +6,32 @@
 #include <stdlib.h>
 #include "Task.h"
 
-
-#define WINDOW_PR_MAX 300
- extern  volatile float P;
+//-----------------------------------------------------
+//  GLOBAL VARIABLE
+//-----------------------------------------------------
+extern volatile float P;
 extern volatile int num_R;
-extern volatile int num_R_abs;
+extern int task_signals;
+extern int window_PR;
+
+//-----------------------------------------------------
+//  FISIOLOGICAL MACRO
+//-----------------------------------------------------
+#define WINDOW_PR_MAX 300
+
+//-----------------------------------------------------
+//  DIAGNOSIS FUNCTION
+//-----------------------------------------------------
 void finestraRP();
-void picco_R(); //uesta funzione mi registra i picchi R eil relativo tempo
+
+void picco_R();
+
 void picco_P();
+
 void aritmia();
+
 void fibr_atriale();
+
 void tachicardia_sinusale();
+
 void decesso();

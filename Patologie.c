@@ -3,32 +3,8 @@
 
 #include "Patologie.h"
 
-
 //-----------------------------------------------------
-// GLOBAL VARIABLE
-//-----------------------------------------------------
-extern FILE *fp;
-extern int x_i;
-extern int y_i;
-extern int x_f;
-extern int y_f;
-extern float vett_x[DIM_DATI];
-extern float vett_y[DIM_DATI];
-extern float vett_R[DIM_DATI];
-extern float time_R[DIM_DATI];
-extern int indice_R[DIM_DATI];
-
-
-extern int window_PR;
-
-
-
-//-----------------------------------------------------
-// PRIVATE VARIABLE
-//-----------------------------------------------------
-
-//-----------------------------------------------------
-//FUNZIONI AUSILIARI
+//  UTILS FUNCTION
 //-----------------------------------------------------
 void finestraRP() {
     float t_camp;
@@ -39,10 +15,15 @@ void finestraRP() {
 
 }
 
+//-----------------------------------------------------
+//  DIAGNOSIS FUNCTION
+//-----------------------------------------------------
 
-//-----------------------------------------------------
-//         PICCO R
-//-----------------------------------------------------
+
+/*
+ * CHECK THE R VALUE:
+ *  absolute max value of ECG
+ */
 
 void picco_R() {
 
@@ -52,11 +33,12 @@ void picco_R() {
     svuota_vett_float(DIM_DATI, vett_R);
     svuota_vett_float(DIM_DATI, time_R);
     svuota_vett_int(DIM_DATI, indice_R);
-num_R=0;
+    num_R = 0;
 
 
     for (int k = 1; k < DIM_DATI; k++) {
-        if (vett_y[k] > vett_y[k - 1] && vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
+        if (vett_y[k] > vett_y[k - 1] &&
+            vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
             //precedente e se sto su un picco R
             if (i == -1 ||
                 (vett_x[k] - time_R[i] > 00.05 &&
@@ -64,7 +46,7 @@ num_R=0;
                 //la seconda mi serve a capire se sto valutando picchi tra loro lontani
                 i++;                                        //se sono verificate queste condizioni allora incremento i
                 num_R++;
-                num_R_abs++;
+
             }
             time_R[i] = vett_x[k];                          //aggiorno i vettori che mi registrano i tempi dei picchi R
             vett_R[i] = vett_y[k];
@@ -80,9 +62,11 @@ num_R=0;
 }
 
 
-//-----------------------------------------------------
-//         PICCO P
-//-----------------------------------------------------
+/*
+ * CHECK THE P VALUE:
+ * local max value before R value
+ */
+
 void picco_P() {
     int k;
     finestraRP();
@@ -100,9 +84,10 @@ void picco_P() {
 
 }
 
-//-----------------------------------------------------
-//         ARITMIA 4
-//-----------------------------------------------------
+/*
+ * DETECT THE FREQUENCY OF R VALUE:
+ * press on screen_ecg if the frequency is in the normal range or not
+ * */
 void aritmia() {
     int j = 0;
 
@@ -122,12 +107,14 @@ void aritmia() {
     if (j > 1)
         textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
     else
-        textout_ex(screen_ecg, font_medio, "REGOLARE",350 , 700, GREEN, GND);
+        textout_ex(screen_ecg, font_medio, "REGOLARE", 350, 700, GREEN, GND);
 }
 
-//-----------------------------------------------------
-//         FIBRILLAZIONE ATRIALE 3
-//-----------------------------------------------------
+/*
+ * DETECT THE P VALUE:
+ * press on screen_ecg if the patient have am atrial fibrillation
+ *
+ */
 void fibr_atriale() {
     int k = 1;
     if (num_R < 3) {
@@ -143,33 +130,34 @@ void fibr_atriale() {
     }
 }
 
-//-----------------------------------------------------
-//         TACHICARDIA SINUSALE 5
-//-----------------------------------------------------
+/*
+ * DETECT BEATS/MINUTE:
+ * press on screen_ecg if the patient have an sinus tachicardia
+ */
+
 void tachicardia_sinusale() {
     finestraRP();
     int j = 1;
-    if (num_R<4){
+    if (num_R < 4) {
         return;
     }
-    //for (int k = 1; k < num_R; k++) {
-        // if (time_R[k] - time_R[k - 1] > 00.300) { //non supera i 300ms quindi fa più di 100 battiti/min
-        if (window_PR > 100) {
-            printf("%d tachicardia sinusale  \n", j);
-            textout_ex(screen_ecg,font_medio, "PRESENTE", 350, 800, RED, GND);
+    if (window_PR > 100) {
+        printf("%d tachicardia sinusale  \n", j);
+        textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 800, RED, GND);
 
-        } else {
-            printf("%d nessuna tachicardia sinusale  \n", j);
-            textout_ex(screen_ecg,font_medio, "ASSENTE", 350, 800, GREEN, GND);
+    } else {
+        printf("%d nessuna tachicardia sinusale  \n", j);
+        textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 800, GREEN, GND);
 
-       // }
+
     }
 
 }
 
-//-----------------------------------------------------
-//        DECESSO 2
-//-----------------------------------------------------
+/*
+ * DETECT IF PATIENT DON'T HAVE BEATS
+ *
+ */
 void decesso() {
     int count;
 
@@ -184,7 +172,7 @@ void decesso() {
                 textout_ex(screen_ecg, font_medio, "DECESSO", 400, 930, RED, GND);
                 count = 0;
             }
-             printf(" %d decesso  \n", count);
+            printf(" %d decesso  \n", count);
         }
     }
 }
