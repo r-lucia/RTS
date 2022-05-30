@@ -26,10 +26,10 @@ extern float time_R[DIM_DATI];
 extern int indice_R[DIM_DATI];
 volatile int abilita_diagnosi;
 
-extern  int num_tachicardia;
+extern volatile int num_tachicardia;
 extern int num_fibr_atriali;
 extern int num_aritmia_sinusale;
-
+extern  int indice;
 
 volatile int check_end_file;
 //-----------------------------------------------------

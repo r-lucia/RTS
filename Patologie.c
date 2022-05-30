@@ -37,7 +37,7 @@ void picco_R() {
     num_R = 0;
 
 
-    for (int k = 1; k < DIM_DATI; k++) {
+    for (int k = 1; k < indice; k++) {
         if (vett_y[k] > vett_y[k - 1] &&
             vett_y[k] > R) { //questo if mi serve per verificare se il valore successivo è maggiore del
             //precedente e se sto su un picco R
@@ -90,23 +90,30 @@ void picco_P() {
  * press on screen_ecg if the frequency is in the normal range or not
  * */
 void aritmia() {
+int k;
     int j = 0;
-
+    int appoggio;
     printf("num_R: %d, j = %d\n", num_R, j);
     if (num_R < 2) {
         return;
     }
-    for (int k = 1; k < num_R; k++) {
-        if (time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
+    for (int k = 1; k < num_R; k++){
+
+
+        if ( k< num_R && time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
             j++;
+
+
             printf("%d aritmia  \n", j);
         }
+
+
 //        else
 //            printf("%d nessuna aritmia  \n", j);
-    }
-    printf("end for aritmia: j = %d\n", j);
-    if (j > 1)
-        num_tachicardia++;
+   }
+   sprintf(str_tachicardia, "%d",j);
+  //  printf("end for aritmia: j = %d\n", j);
+
        // textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
     //else
         //textout_ex(screen_ecg, font_medio, "REGOLARE", 350, 700, GREEN, GND);
@@ -119,6 +126,7 @@ void aritmia() {
  */
 void fibr_atriale() {
     int k = 1;
+    char str[20];
     if (num_R < 3) {
         return;
     }
@@ -150,7 +158,7 @@ void tachicardia_sinusale() {
 
     } else {
         printf("%d nessuna tachicardia sinusale  \n", j);
-        textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 800, GREEN, GND);
+       // textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 800, GREEN, GND);
 
 
     }

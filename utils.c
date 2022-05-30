@@ -15,7 +15,7 @@
 // GLOBAL VARIABLES
 //-----------------------------------------------------
 int task_signals = 0;
-
+char str_tachicardia[20];
 //-----------------------------------------------------
 // TIME HANDLING FUNCTIONS
 //-----------------------------------------------------
@@ -256,11 +256,16 @@ void grafica_statica() {
  * in the screen_ecg bitmap
 */
 void grafica_dinamica() {
+
+ //sprintf(str_tachicardia, "%d",num_tachicardia);
+
+
      //200 è l'offset di partenza per buttar giù tutto il grafico
     textout_ex(screen, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
     textout_ex(screen, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
     textout_ex(screen, font_medio, "Dati del paziente", 1500, 650, WHITE, GND);
-    textout_ex(screen, font_medio, " Frequenza battito cardiaco", 5, 700, WHITE, GND);
+    textout_ex(screen, font_medio, " Tachicardia : ", 5, 700, WHITE, GND);
+    textout_ex(screen, font_medio, str_tachicardia, 200, 700, RED, GND);
     textout_ex(screen, font_medio, " Fibirllazione atriale", 5, 750, WHITE, GND);
     textout_ex(screen, font_medio, " Aritmia sinusale", 5, 800, WHITE, GND);
 

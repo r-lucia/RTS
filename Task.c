@@ -9,9 +9,10 @@
 
 pthread_mutex_t mut1 = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mut2 = PTHREAD_COND_INITIALIZER;
-int num_tachicardia = 0;
-int num_fibr_atriali = 0;
-int num_aritmia_sinusale = 0;
+volatile int num_tachicardia;
+int num_fibr_atriali;
+int num_aritmia_sinusale;
+int indice;
 
 //-----------------------------------------------------
 //  TASK FUNCTION
@@ -102,14 +103,15 @@ void *task_ecg(struct parametri_task *arg) {
     float t_draw;
     float s_draw;
     grafica_statica();
-    int i;
+
     char lines[100];
     while (!key[KEY_ESC])  // ESC: chiudo il task: return ID task_ecg: esco dal main
     {
 
         char str[20];
         set_period(index);
-        while (abilita_diagnosi == 1 && i < DIM_DATI) {
+        while (abilita_diagnosi == 1 && indice < DIM_DATI) {
+
             if (key[KEY_ALT]) {            // ALT: stop ecg e ritorna a screen_base
                 clear(screen);
                 clear(screen_ecg);
@@ -122,11 +124,14 @@ void *task_ecg(struct parametri_task *arg) {
                 y_i = 0;
                 x_f = 0;
                 y_f = 0;
+                num_tachicardia = 0;
+                num_fibr_atriali = 0;
+                num_aritmia_sinusale = 0;
                 abilita_diagnosi = 0;
                 svuota_vett_float(DIM_DATI, vett_R);
                 svuota_vett_float(DIM_DATI, time_R);
                 svuota_vett_int(DIM_DATI, indice_R);
-                i = 0;
+                indice = 0;
                 svuota_vett_float(DIM_DATI, vett_y);
                 svuota_vett_float(DIM_DATI, vett_x);
 
@@ -134,12 +139,12 @@ void *task_ecg(struct parametri_task *arg) {
             }
 
             pthread_mutex_lock(&mut1);
-            t_draw = vett_x[i] * 150; //[s]: ascissa dell'ECG
+            t_draw = vett_x[indice] * 150; //[s]: ascissa dell'ECG
             pthread_mutex_unlock(&mut1);
             x_f = (int) t_draw;
 
             pthread_mutex_lock(&mut2);
-            s_draw = vett_y[i] * (-100); //[mV]: ordinata dell'ECG
+            s_draw = vett_y[indice] * (-100); //[mV]: ordinata dell'ECG
             pthread_mutex_unlock(&mut2);
             y_f = (int) s_draw;
             line(screen, x_i, 400 + y_i, x_f, 400 + y_f, WHITE);
@@ -149,8 +154,8 @@ void *task_ecg(struct parametri_task *arg) {
             // blit(screen_ecg, screen, 0, 0, 0, 0, screen_ecg->w, screen_ecg->h);
             x_i = x_f;
             y_i = y_f;
-            i++;
-            printf("\n  indice vettori  %d\n", i);
+            indice++;
+            printf("\n  indice vettori  %d\n", indice);
 
             wait_for_period(index);
         }
@@ -173,7 +178,11 @@ void *task_diagnosi(struct parametri_task *arg) {
 
     while (!task_signals) {
 
-        if (!abilita_diagnosi) {
+        svuota_vett_float(DIM_DATI, vett_R);
+        svuota_vett_float(DIM_DATI, time_R);
+        svuota_vett_int(DIM_DATI, indice_R);
+
+        if (abilita_diagnosi == 1) {
 
             picco_R();
             picco_P();
@@ -181,12 +190,14 @@ void *task_diagnosi(struct parametri_task *arg) {
             fibr_atriale();
             tachicardia_sinusale();
             aritmia();
+
+           // num_tachicardia=0;
             // decesso();
         } //check sulla deadline miss, visualizzare a schermo le deadline miss di tutti i task
         wait_for_period(index);
-        num_tachicardia = 0;
-        num_fibr_atriali = 0;
-        num_aritmia_sinusale = 0;
+        /* num_tachicardia = 0;
+         num_fibr_atriali = 0;
+         num_aritmia_sinusale = 0;*/
 
     }
 
