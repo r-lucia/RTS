@@ -90,34 +90,23 @@ void picco_P() {
  * press on screen_ecg if the frequency is in the normal range or not
  * */
 void aritmia() {
-int k;
     int j = 0;
-    int appoggio;
     printf("num_R: %d, j = %d\n", num_R, j);
-    if (num_R < 2) {
+  /*  if (num_R < 2) {
         return;
-    }
-    for (int k = 1; k < num_R; k++){
+    }*/
+    for (int k = 1; k < num_R; k++) {
 
-
-        if ( k< num_R && time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
+        if (k < num_R && time_R[k] - time_R[k - 1] > 1.1) { //non deve superare 2 quadettirni quindi 0,4s=> 400ms
             j++;
-
-
             printf("%d aritmia  \n", j);
+
+            sprintf(str_tachicardia, " %d", j);
         }
-
-
-//        else
-//            printf("%d nessuna aritmia  \n", j);
-   }
-   sprintf(str_tachicardia, "%d",j);
-  //  printf("end for aritmia: j = %d\n", j);
-
-       // textout_ex(screen_ecg, font_medio, "NON REGOLARE", 350, 700, RED, GND);
-    //else
-        //textout_ex(screen_ecg, font_medio, "REGOLARE", 350, 700, GREEN, GND);
+else sprintf(str_tachicardia, " %d", j);
+    }
 }
+
 
 /*
  * DETECT THE P VALUE:
@@ -125,18 +114,21 @@ int k;
  *
  */
 void fibr_atriale() {
-    int k = 1;
+    int k = 0;
     char str[20];
-    if (num_R < 3) {
+    if (num_R < 1) {
         return;
     }
     if (fp != NULL && P == 0) {
+        k = 1;
         printf("%d fibrillazioni atriali presente \n", k);
-num_fibr_atriali++;
+        sprintf(str_fibr_atriale, " %d", k);
+
         //textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 750, RED, GND);
     } else {
         //textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 750, GREEN, GND);
-        printf("%d fibrillazioni atriali assente \n", k);
+        printf("%d fibrillazioni atriali \n", k);
+        sprintf(str_fibr_atriale, " %d", k);
     }
 }
 
@@ -147,18 +139,22 @@ num_fibr_atriali++;
 
 void tachicardia_sinusale() {
     finestraRP();
-    int j = 1;
-    if (num_R < 4) {
+    int j = 0;
+    if (num_R < 1) {
         return;
     }
     if (window_PR > 100) {
+        j = 1;
         printf("%d tachicardia sinusale  \n", j);
-       // textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 800, RED, GND);
-       num_aritmia_sinusale++;
+        // textout_ex(screen_ecg, font_medio, "PRESENTE", 350, 800, RED, GND);
+        num_aritmia_sinusale++;
+        sprintf(str_sinusale, " %d", j);
+
 
     } else {
         printf("%d nessuna tachicardia sinusale  \n", j);
-       // textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 800, GREEN, GND);
+        sprintf(str_sinusale, " %d", j);
+        // textout_ex(screen_ecg, font_medio, "ASSENTE", 350, 800, GREEN, GND);
 
 
     }

@@ -118,16 +118,17 @@ void *task_ecg(struct parametri_task *arg) {
                 grafica_statica();
                 // blit(screen_base, buffer_screen, 0, 0, 0, 0, screen_base->w, screen_base->h);
                 fp = NULL;
+                int j = 0;
                 num_R = 0;
                 P = 0;
                 x_i = 0;
                 y_i = 0;
                 x_f = 0;
                 y_f = 0;
-                num_tachicardia = 0;
-                num_fibr_atriali = 0;
-                num_aritmia_sinusale = 0;
-                abilita_diagnosi = 0;
+                sprintf(str_sinusale, " " );
+                sprintf(str_tachicardia, " ");
+                sprintf(str_fibr_atriale, " ");
+
                 svuota_vett_float(DIM_DATI, vett_R);
                 svuota_vett_float(DIM_DATI, time_R);
                 svuota_vett_int(DIM_DATI, indice_R);
@@ -159,6 +160,8 @@ void *task_ecg(struct parametri_task *arg) {
 
             wait_for_period(index);
         }
+        // x_f=0;
+        // y_f=0;
         abilita_diagnosi = 0;
 
 
@@ -191,7 +194,7 @@ void *task_diagnosi(struct parametri_task *arg) {
             tachicardia_sinusale();
             aritmia();
 
-           // num_tachicardia=0;
+            // num_tachicardia=0;
             // decesso();
         } //check sulla deadline miss, visualizzare a schermo le deadline miss di tutti i task
         wait_for_period(index);

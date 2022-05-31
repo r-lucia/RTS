@@ -16,6 +16,8 @@
 //-----------------------------------------------------
 int task_signals = 0;
 char str_tachicardia[20];
+char str_sinusale[20];
+ char str_fibr_atriale[20];
 //-----------------------------------------------------
 // TIME HANDLING FUNCTIONS
 //-----------------------------------------------------
@@ -179,6 +181,16 @@ void fonts() {
  * @param *vett: pointer to vector
  */
 
+void svuota_vett_char(int dimensioni_vett, char *vett) {
+    for (int i = 0; i < dimensioni_vett; i++) {
+        vett[i] = 0;
+    }
+}
+/** empty function for vector of int
+ * @param dimensioni_vett: dimention of vector
+ * @param *vett: pointer to vector
+ */
+
 void svuota_vett_int(int dimensioni_vett, int *vett) {
     for (int i = 0; i < dimensioni_vett; i++) {
         vett[i] = 0;
@@ -214,8 +226,7 @@ void inizilizzazione_grafica() {
     clear_to_color(buffer_screen, WHITE);
 
     fonts();
-    //grafica_statica();
-   // function__start_task(task_refresh_grafica, 40, 40, 1, TASK_GRAFIC_INDEX);
+
 
 
 }
@@ -262,10 +273,14 @@ void grafica_dinamica() {
 
      //200 è l'offset di partenza per buttar giù tutto il grafico
     textout_ex(screen, font_titolo, "ECG", (IN_WIDTH / 2) - 50, 5, RED, GND);
-    textout_ex(screen, font_medio, "Diagnosi :", 5, 650, WHITE, GND);
-    textout_ex(screen, font_medio, "Dati del paziente", 1500, 650, WHITE, GND);
-    textout_ex(screen, font_medio, " Tachicardia : ", 5, 700, WHITE, GND);
-    textout_ex(screen, font_medio, str_tachicardia, 200, 700, RED, GND);
+    textout_ex(screen, font_medio, "DIAGNOSI :", 5, 650, WHITE, GND);
+    textout_ex(screen, font_medio, "DATI DEL PAZIENTE", 1500, 650, WHITE, GND);
+    textout_ex(screen, font_medio, " Tachicardia  ", 5, 700, WHITE, GND);
+
+    textout_ex(screen, font_medio, str_tachicardia, 200, 700, WHITE, GND);
+    textout_ex(screen, font_medio, str_sinusale, 200, 800, WHITE, GND);
+    textout_ex(screen, font_medio, str_fibr_atriale, 200, 750, WHITE, GND);
+
     textout_ex(screen, font_medio, " Fibirllazione atriale", 5, 750, WHITE, GND);
     textout_ex(screen, font_medio, " Aritmia sinusale", 5, 800, WHITE, GND);
 

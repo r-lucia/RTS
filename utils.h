@@ -40,6 +40,8 @@
 
 
 extern char str_tachicardia[20];
+extern char str_sinusale[20];
+extern char str_fibr_atriale[20];
 
 //-----------------------------------------------------
 // STRUCT
@@ -94,6 +96,7 @@ void fonts();
 void svuota_vett_int(int dimensioni_vett, int *vett);
 
 void svuota_vett_float(int dimensioni_vett, float *vett);
+void svuota_vett_char(int dimensioni_vett, char *vett);
 
 void inizilizzazione_grafica();
 
